@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,62 +11,38 @@ public class GameManager : MonoBehaviour
     {
         if(_instance == null)
         {
+            // 씬에서 찾아 보자
             _instance = FindObjectOfType<GameManager>();
         }
 
+        // 그런데도 없으면
+        if(_instance == null)
+        {
+            GameObject go = new GameObject("GameManager");
+            _instance = go.AddComponent<GameManager>();
+        }
         return _instance;
     }
-
-
-    public Canvas canva;
-
-
  
     void Start()
     {
-        
-
         Debug.Log(" 시작 하는거 확인");
-        CreateStartPage();
+        UIManager.Instance.CreatePage<UIStartPage>();
+    }
+
+    public void ChanegameScene()
+    {
+        // Scene 전환.
+
+        SceneManager.LoadScene("InGameScene");
+        UIManager.Instance.RemovePage<UISelectMode>();
+        CountTimer ui = UIManager.Instance.CreateGameUI<CountTimer>() as CountTimer;
+        ui.SetGameTime(100);
+    
+    
     }
 
     private void Update()
     {
-        /*if(Input.GetKeyDown(KeyCode.A))
-        {
-            // 이런것이 있는지 불러와본다.
-            GameObject uiPage = Resources.Load<GameObject>("Prefab/UIResultPage");
-
-            Debug.Log(uiPage); // Null
-
-            GameObject ui = Instantiate(uiPage);
-
-            ui.transform.SetParent(canva.transform);
-            (ui.transform as RectTransform).offsetMin = Vector3.zero;
-            (ui.transform as RectTransform).offsetMax = Vector3.zero;
-        }*/
-
     }
-
-
-    private void CreateStartPage()
-    {
-        // 이런것이 있는지 불러와본다.
-        GameObject uiPage = Resources.Load<GameObject>("Prefab/UIStartPage");
-
-        Debug.Log(uiPage); // Null
-
-        GameObject ui = Instantiate(uiPage);
-
-        ui.transform.SetParent(canva.transform);
-
-        // 프로젝트마다 예외처리, 앵커처리를하기 위함
-        (ui.transform as RectTransform).offsetMin = Vector3.zero;
-        (ui.transform as RectTransform).offsetMax = Vector3.zero;
-
-        UIStartPage comp = ui.GetComponent<UIStartPage>();
-        comp.SetCanvas(canva);
-    }
-
-    
 }
